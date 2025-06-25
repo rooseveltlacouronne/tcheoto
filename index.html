@@ -1,52 +1,390 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
-  <base href="/">
-
   <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="Application Tcheoto">
-  <meta name="theme-color" content="#0175C2">
-
-  <!-- iOS meta tags & icons -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="Tcheoto">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
-
-  <title>Tcheoto</title>
-  <link rel="manifest" href="manifest.json">
-
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function () {
-        navigator.serviceWorker.register('service-worker.js').then(function (registration) {
-          console.log('Service Worker registered with scope:', registration.scope);
-        }, function (err) {
-          console.log('Service Worker registration failed:', err);
-        });
-      });
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tcheoto - Portfolio</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.22.5/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/framer-motion@10.12.16/dist/framer-motion.js"></script>
+  <!-- Three.js for 3D graphics -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- Typed.js for typing effect -->
+  <script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.12/lib/typed.min.js"></script>
+  <!-- Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #1a202c, #2d3748);
+      color: #ffffff;
+      overflow-x: hidden;
     }
-  </script>
+    #root {
+      min-height: 100vh;
+    }
+    /* Custom animations */
+    @keyframes glow {
+      0% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
+      50% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.8); }
+      100% { box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); }
+    }
+    .glow-effect {
+      animation: glow 2s infinite;
+    }
+    /* Responsive adjustments */
+    @media (max-width: 640px) {
+      .nav-menu {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .section-container {
+        padding: 1rem;
+      }
+      .profile-img {
+        width: 150px;
+        height: 150px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <script src="flutter_bootstrap.js" async></script>
+  <div id="root"></div>
+  <script type="text/babel">
+    // Main App Component
+    const { motion } = window.FramerMotion;
+
+    const titles = [
+      "Développeur Web React",
+      "Designer Graphique",
+      "Développeur Mobile React",
+      "Entrepreneur",
+      "Développeur Web Flutter",
+      "Designer UI",
+      "Maintenancier",
+      "Développeur Mobile Flutter",
+      "Secrétaire",
+      "Gestionnaire"
+    ];
+
+    function App() {
+      const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+
+      // Initialize Typed.js for typing effect
+      React.useEffect(() => {
+        const typed = new Typed('#typed-element', {
+          strings: titles,
+          typeSpeed: 50,
+          backSpeed: 30,
+          loop: true,
+        });
+        return () => typed.destroy();
+      }, []);
+
+      // Initialize Three.js for 3D background (simplified example)
+      React.useEffect(() => {
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('three-canvas').appendChild(renderer.domElement);
+
+        const geometry = new THREE.TorusGeometry(10, 3, 16, 100);
+        const material = new THREE.MeshBasicMaterial({ color: 0x3b82f6, wireframe: true });
+        const torus = new THREE.Mesh(geometry, material);
+        scene.add(torus);
+        camera.position.z = 30;
+
+        const animate = () => {
+          requestAnimationFrame(animate);
+          torus.rotation.x += 0.01;
+          torus.rotation.y += 0.01;
+          renderer.render(scene, camera);
+        };
+        animate();
+
+        // Handle resize
+        const handleResize = () => {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+      }, []);
+
+      const skills = [
+        { category: "Développement React", percentage: 80, languages: ["C", "C++", "JavaScript", "Java", "Kotlin", "C#", "HTML", "CSS", "TypeScript"], tools: ["Git", "VS Code", "Android Studio"], databases: ["Firebase", "SQLite", "MySQL", "Oracle"] },
+        { category: "Développement Flutter", percentage: 85, languages: ["C", "C++", "Java", "Kotlin", "C#", "Dart"], tools: ["Git", "VS Code", "Android Studio"], databases: ["Firebase", "SQLite", "MySQL", "Oracle"] },
+        { category: "Développement Web PHP", percentage: 90, languages: ["PHP", "HTML", "CSS", "JavaScript"], databases: ["SQLite", "MySQL"] },
+        { category: "Design", tools: [
+          { name: "Canva", percentage: 100 },
+          { name: "Photoshop", percentage: 60 },
+          { name: "Figma", percentage: 95 }
+        ]},
+        { category: "Secrétariat Bureautique", percentage: 100, tools: ["Word", "Publisher", "PowerPoint", "Excel"] }
+      ];
+
+      const projects = Array(8).fill().map((_, i) => ({
+        name: `Projet ${i + 1}`,
+        description: `Description du projet ${i + 1}. Une solution innovante utilisant des technologies modernes.`,
+        link: `https://github.com/project${i + 1}`
+      }));
+
+      const designs = Array(50).fill().map((_, i) => ({
+        name: `Design ${i + 1}`,
+        image: `https://via.placeholder.com/300x200?text=Design+${i + 1}`
+      }));
+
+      return (
+        <div className="relative">
+          {/* 3D Background Canvas */}
+          <div id="three-canvas" className="absolute top-0 left-0 w-full h-full opacity-20 z-0"></div>
+
+          {/* Navigation Menu */}
+          <motion.nav
+            initial={{ y: -100 }}
+            animate={{ y: 0 }}
+            transition={{ type: "spring", stiffness: 100 }}
+            className="fixed top-0 w-full bg-gray-900 bg-opacity-80 backdrop-blur-md z-50 p-4 flex justify-between items-center"
+          >
+            <div className="text-2xl font-bold text-blue-500">Tcheoto</div>
+            <button className="sm:hidden text-white" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+              {isMenuOpen ? '✕' : '☰'}
+            </button>
+            <div className={`nav-menu flex gap-6 ${isMenuOpen ? 'flex' : 'hidden'} sm:flex`}>
+              {['Accueil', 'À Propos', 'Compétences', 'Projets', 'Designs', 'Contact'].map((item) => (
+                <a
+                  key={item}
+                  href={`#${item.toLowerCase().replace(' ', '-')}`}
+                  className="text-white hover:text-blue-500 transition-all duration-300 glow-effect"
+                >
+                  {item}
+                </a>
+              ))}
+            </div>
+          </motion.nav>
+
+          {/* Home Section */}
+          <section id="accueil" className="min-h-screen flex items-center justify-center section-container relative">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1 }}
+              className="text-center"
+            >
+              <img
+                src="https://via.placeholder.com/200"
+                alt="Profile"
+                className="profile-img rounded-full mx-auto mb-4 glow-effect"
+              />
+              <h1 className="text-4xl md:text-6xl font-bold mb-4">Roosevelt TBR</h1>
+              <h2 className="text-xl md:text-2xl mb-4">
+                <span id="typed-element" className="text-blue-500"></span>
+              </h2>
+              <div className="flex justify-center gap-4">
+                <a href="https://wa.me/your-number" className="text-2xl text-green-500 hover:scale-110 transition-transform"><i className="fab fa-whatsapp"></i></a>
+                <a href="https://facebook.com/your-profile" className="text-2xl text-blue-600 hover:scale-110 transition-transform"><i className="fab fa-facebook"></i></a>
+                <a href="https://t.me/your-username" className="text-2xl text-blue-400 hover:scale-110 transition-transform"><i className="fab fa-telegram"></i></a>
+              </div>
+            </motion.div>
+          </section>
+
+          {/* About Me Section */}
+          <section id="à-propos" className="min-h-screen flex items-center justify-center section-container bg-gray-800 bg-opacity-50">
+            <motion.div
+              initial={{ x: -100, opacity: 0 }}
+              whileInView={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              className="max-w-3xl text-center p-6"
+            >
+              <h2 className="text-3xl md:text-5xl font-bold mb-6">À Propos de Moi</h2>
+              <p className="text-lg mb-4">
+                Je suis étudiant à l'Université de Yaoundé 1, en Licence 2, filière professionnelle ICT4D, option Génie Logiciel. Fondateur de la startup <span className="text-blue-500">Global Digital Technology</span> et Président-Directeur Général du groupe <span className="text-blue-500">Excellentia Corporation</span>, je combine expertise technique et vision entrepreneuriale pour créer des solutions innovantes.
+              </p>
+            </motion.div>
+          </section>
+
+          {/* Technical Skills Section */}
+          <section id="compétences" className="min-h-screen flex items-center justify-center section-container">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 1 }}
+              className="max-w-4xl w-full p-6"
+            >
+              <h2 className="text-3xl md:text-5xl font-bold text-center mb-8">Compétences Techniques</h2>
+              {skills.map((skill, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ x: index % 2 === 0 ? -50 : 50, opacity: 0 }}
+                  whileInView={{ x: 0, opacity: 1 }}
+                  transition={{ delay: index * 0.2 }}
+                  className="mb-6"
+                >
+                  <h3 className="text-xl font-semibold mb-2">{skill.category}</h3>
+                  {skill.percentage && (
+                    <div className="w-full bg-gray-700 rounded-full h-4">
+                      <motion.div
+                        className="bg-blue-500 h-4 rounded-full glow-effect"
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${skill.percentage}%` }}
+                        transition={{ duration: 1.5, ease: "easeOut" }}
+                      ></motion.div>
+                    </div>
+                  )}
+                  {skill.languages && <p className="mt-2"><strong>Langages:</strong> {skill.languages.join(", ")}</p>}
+                  {skill.tools && !Array.isArray(skill.tools) && <p><strong>Outils:</strong> {skill.tools.join(", ")}</p>}
+                  {skill.databases && <p><strong>Bases de données:</strong> {skill.databases.join(", ")}</p>}
+                  {skill.tools && Array.isArray(skill.tools) && skill.tools.map((tool, i) => (
+                    <div key={i} className="mt-2">
+                      <p><strong>{tool.name}:</strong></p>
+                      <div className="w-full bg-gray-700 rounded-full h-4">
+                        <motion.div
+                          className="bg-blue-500 h-4 rounded-full glow-effect"
+                          initial={{ width: 0 }}
+                          whileInView={{ width: `${tool.percentage}%` }}
+                          transition={{ duration: 1.5, ease: "easeOut" }}
+                        ></motion.div>
+                      </div>
+                    </div>
+                  ))}
+                </motion.div>
+              ))}
+            </motion.div>
+          </section>
+
+          {/* Projects Section */}
+          <section id="projets" className="min-h-screen flex items-center justify-center section-container bg-gray-800 bg-opacity-50">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 1 }}
+              className="max-w-5xl w-full p-6"
+            >
+              <h2 className="text-3xl md:text-5xl font-bold text-center mb-8">Mes Projets</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {projects.map((project, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ y: 50, opacity: 0 }}
+                    whileInView={{ y: 0, opacity: 1 }}
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="bg-gray-900 p-4 rounded-lg glow-effect relative"
+                  >
+                    <h3 className="text-xl font-semibold mb-2">{project.name}</h3>
+                    <motion.div
+                      className="absolute inset-0 bg-blue-500 bg-opacity-90 flex items-center justify-center p-4 rounded-lg text-white opacity-0"
+                      whileHover={{ opacity: 1 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <p>{project.description}</p>
+                    </motion.div>
+                    <a
+                      href={project.link}
+                      className="inline-block mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+                    >
+                      Voir le Projet
+                    </a>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </section>
+
+          {/* Designs Section */}
+          <section id="designs" className="min-h-screen flex items-center justify-center section-container">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 1 }}
+              className="max-w-5xl w-full p-6"
+            >
+              <h2 className="text-3xl md:text-5xl font-bold text-center mb-8">Mes Designs</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {designs.slice(0, 12).map((design, index) => ( // Limited to 12 for demo
+                  <motion.div
+                    key={index}
+                    initial={{ y: 50, opacity: 0 }}
+                    whileInView={{ y: 0, opacity: 1 }}
+                    whileHover={{ scale: 1.1 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="relative"
+                  >
+                    <img src={design.image} alt={design.name} className="w-full h-48 object-cover rounded-lg glow-effect" />
+                    <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                      <p className="text-white">{design.name}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </section>
+
+          {/* Contact Section */}
+          <section id="contact" className="min-h-screen flex items-center justify-center section-container bg-gray-800 bg-opacity-50">
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 1 }}
+              className="max-w-lg w-full p-6"
+            >
+              <h2 className="text-3xl md:text-5xl font-bold text-center mb-8">Contactez-Moi</h2>
+              <div className="bg-gray-900 p-6 rounded-lg glow-effect">
+                <input
+                  type="text"
+                  placeholder="Votre Nom"
+                  className="w-full mb-4 p-2 rounded bg-gray-800 text-white border border-gray-700 focus:outline-none focus:border-blue-500"
+                />
+                <input
+                  type="email"
+                  placeholder="Votre Email"
+                  className="w-full mb-4 p-2 rounded bg-gray-800 text-white border border-gray-700 focus:outline-none focus:border-blue-500"
+                />
+                <textarea
+                  placeholder="Votre Message"
+                  className="w-full mb-4 p-2 rounded bg-gray-800 text-white border border-gray-700 focus:outline-none focus:border-blue-500 h-32"
+                ></textarea>
+                <button
+                  onClick={() => alert('Message envoyé à roosevelt.tbr@gmail.com')}
+                  className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors"
+                >
+                  Envoyer
+                </button>
+                <div className="flex justify-center gap-4 mt-6">
+                  <a href="https://wa.me/your-number" className="text-2xl text-green-500 hover:scale-110 transition-transform"><i className="fab fa-whatsapp"></i></a>
+                  <a href="https://facebook.com/your-profile" className="text-2xl text-blue-600 hover:scale-110 transition-transform"><i className="fab fa-facebook"></i></a>
+                  <a href="https://t.me/your-username" className="text-2xl text-blue-400 hover:scale-110 transition-transform"><i className="fab fa-telegram"></i></a>
+                </div>
+              </div>
+            </motion.div>
+          </section>
+
+          {/* Footer */}
+          <motion.footer
+            initial={{ y: 100 }}
+            animate={{ y: 0 }}
+            transition={{ type: "spring", stiffness: 100 }}
+            className="bg-gray-900 p-6 text-center"
+          >
+            <p>&copy; 2025 Tcheoto. Tous droits réservés.</p>
+            <div className="flex justify-center gap-4 mt-4">
+              <a href="https://wa.me/your-number" className="text-2xl text-green-500 hover:scale-110 transition-transform"><i className="fab fa-whatsapp"></i></a>
+              <a href="https://facebook.com/your-profile" className="text-2xl text-blue-600 hover:scale-110 transition-transform"><i className="fab fa-facebook"></i></a>
+              <a href="https://t.me/your-username" className="text-2xl text-blue-400 hover:scale-110 transition-transform"><i className="fab fa-telegram"></i></a>
+            </div>
+          </motion.footer>
+        </div>
+      );
+    }
+
+    // Render the App
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+  <!-- Font Awesome for icons -->
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </body>
 </html>
